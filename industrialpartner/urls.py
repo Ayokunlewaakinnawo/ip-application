@@ -1,4 +1,6 @@
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
@@ -20,3 +22,5 @@ urlpatterns = [
     #path('<str:manufacturer>/', manufacturer_prod_page, name='manufacturer_prod_page'),
     path('filtered', filter_view, name='filter_view'),
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
