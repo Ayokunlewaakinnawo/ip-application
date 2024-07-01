@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html data-wf-page="66744d40681b4e5527e56c60" data-wf-site="66699e613a9f0781083938d8">
+    {% extends 'industrialpartner/base/base.html' %}
+    {% load static %}
+    {% block content %}
+    
+    <body>
+       <div style="margin: 100px; text-align: center;">
+        <div class="html-embed-2 w-embed">
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="lightgreen" viewBox="0 0 24 24">
+                <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z"/>
+                <path fill-rule="evenodd" d="M11 7V2h7a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9h5a2 2 0 0 0 2-2Zm4.707 5.707a1 1 0 0 0-1.414-1.414L11 14.586l-1.293-1.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4Z" clip-rule="evenodd"/>
+              </svg> 
+            </div>
+
+            <p style="font-size: 18px; font-weight: bold;">Your Quote Request has been Submitted.</p>
+            <p>We would get back with you shortly</p>
+                <!--Script for auto redirecting page-->
+                <script>
+                    // Countdown function
+                    function countdown(seconds) {
+                        document.getElementById('countdown').textContent = seconds;
+                        if (seconds > 0) {
+                            setTimeout(function() {
+                                countdown(seconds - 1);
+                            }, 1000);
+                        } else {
+                            // Redirect after countdown
+                            window.location.replace("{% url 'all_product' %}");
+                        }
+                    }
+                
+                    // Start countdown on page load
+                    document.addEventListener('DOMContentLoaded', function() {
+                        countdown(10); // Start countdown from 7 seconds
+                    });
+                </script>  
+                
+                <div style="margin-top: 50px;">
+                    <a href="{% url 'all_product'%}" style="text-decoration: none;">
+                        <div>Click here 
+                        </div>
+                        <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
+                        </svg>
+                        </div>
+                    </a>
+                    <h6>to view the all our Product Catalog</h6>
+                    <p>Redirecting in <span id="countdown"></span> seconds... </p> 
+                    <img id="loader_cart" style="max-width: 25px; vertical-align: middle; margin-left: 0;" src="https://media.tenor.com/GdWFHSpv44EAAAAj/loading-circles.gif" alt="Loading...">
+                </div>
+
+        </div>
+        
+        
+
+        </div>
+        </svg>
+       </div>
+    </body>
+
+    {% endblock %}
+</html>
