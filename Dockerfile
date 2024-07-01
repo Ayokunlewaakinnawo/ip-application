@@ -18,6 +18,11 @@ RUN pip install gunicorn
 # Copy the rest of the application code
 COPY . /app/
 
+# Collect static files
+RUN python manage.py collectstatic --noinput
+
+# Create directory for static files
+RUN mkdir -p /industrialpartner/static/
 # Expose port
 EXPOSE 8000
 
