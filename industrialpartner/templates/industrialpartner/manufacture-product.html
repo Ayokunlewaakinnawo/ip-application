@@ -57,6 +57,7 @@
                                     </div>
                                     <input class="f-field-input-2 w-input" data-name="Modal QTY" id="id_quantity" maxlength="256" name="quantity" placeholder="" required="" type="number"/>
                                 </div>
+                                <input class="f-field-input-2 w-input" data-name="Modal PW 2" id="id_comments" maxlength="256" name="comments" type="hidden" value="Quote request from Ind.Part-django"/>
                                 <div class="f-field-wrapper-2" id="w-node-d8d7408e-914a-26fe-12a2-c916237306c0-57ab194c">
                                     <input class="f-field-input-2 w-input" data-name="Modal PW 2" id="id_first_name" maxlength="256" name="first_name" placeholder="First Name" type="text" value="{{ form.first_name.value }}"/>
                                 </div>
@@ -140,7 +141,7 @@
                                         <h3 class="uui-heading-medium-34">
                                             {{ manufacturer_name }}
                                         </h3>
-                                        <p style="font-size: 14px;">{{manufacturer_info}}</p>
+                                        <p style="font-size: 14px; color: #333;">{{manufacturer_info}}</p>
                                     </div>
                                     <div class="uui-space-xsmall-31">
                                     </div>
@@ -151,19 +152,19 @@
                                     <div class="uui-container-large-39">
                                     </div>
                                     <div class="w-form">
-                                        <form data-name="Email Form" data-wf-element-id="01590b04-412c-3be8-17a0-703247710fab" data-wf-page-id="666d93a12dd00cac57ab194c" id="email-form" method="get" name="email-form">
-                                            
+
+                                        <form data-name="Email Form" data-wf-element-id="01590b04-412c-3be8-17a0-703247710fab" data-wf-page-id="666d93a12dd00cac57ab194c" id="email-form" method="get" action="{% url 'manufacturer_prod' manufacturer_id%}" name="email-form">                                            
                                             <div class="f-field-wrapper">
                                                 <div class="f-field-icon-wrapper">
-                                                    <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R 2" id="Input-Field-Icon-R-2" maxlength="256" name="Input-Field-Icon-R-2" placeholder="Search for an Item by Part Number/Model Name" type="text"/>
-                                                    <a class="link-block-2 w-inline-block" href="#">
+                                                    <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R 2" id="Input-Field-Icon-R-2" maxlength="256" name="part_number" value="{{ part_number }}" placeholder="Enter Part-Number of {{ manufacturer_name }}" type="text"/>
+                                                    <button type="submit" class="link-block-2 w-inline-block">
                                                         <div class="f-field-icon-r w-embed">
                                                             <svg fill="none" height="420" viewbox="0 0 24 24" width="420" xmlns="http://www.w3.org/2000/svg">
                                                                 <path d="M11 2C15.968 2 20 6.032 20 11C20 15.968 15.968 20 11 20C6.032 20 2 15.968 2 11C2 6.032 6.032 2 11 2ZM11 18C14.867 18 18 14.867 18 11C18 7.132 14.867 4 11 4C7.132 4 4 7.132 4 11C4 14.867 7.132 18 11 18ZM19.485 18.071L22.314 20.899L20.899 22.314L18.071 19.485L19.485 18.071V18.071Z" fill="currentColor">
                                                                 </path>
                                                             </svg>
                                                         </div>
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>
@@ -180,7 +181,7 @@
                                             <div class="uui-navbar06_blog-list">
                                                 <!--FIRST 6 PRODUCT-->
                                                 {% for item in first_six_items %}
-                                                    <a class="uui-navbar06_blog-item w-inline-block" href="{% url 'product' item_id=item.ItemID%}">
+                                                    <a class="uui-navbar06_blog-item w-inline-block" href="{% url 'product' item_id=item.ItemID slug=item.Slug%}">
                                                         <div class="uui-navbar06_blog-item-image-wrapper">
                                                             <img alt="" class="uui-navbar06_blog-item-image" src="{% static 'industrialpartner/images/test-selling-product.jpg' %}"/>
                                                         </div>
@@ -313,7 +314,7 @@
                                     <path d="M8.186 1.113a.5.5 0 0 0-.372 0L1.846 3.5l2.404.961L10.404 2zm3.564 1.426L5.596 5 8 5.961 14.154 3.5zm3.25 1.7-6.5 2.6v7.922l6.5-2.6V4.24zM7.5 14.762V6.838L1 4.239v7.923zM7.443.184a1.5 1.5 0 0 1 1.114 0l7.129 2.852A.5.5 0 0 1 16 3.5v8.662a1 1 0 0 1-.629.928l-7.185 2.874a.5.5 0 0 1-.372 0L.63 13.09a1 1 0 0 1-.63-.928V3.5a.5.5 0 0 1 .314-.464z"/>
                                   </svg>
                             </div>    
-                            <a class="link-block-6 w-inline-block" href="{% url 'product' item_id=item.ItemID%}" >
+                            <a class="link-block-6 w-inline-block" href="{% url 'product' item_id=item.ItemID slug=item.Slug%}" >
                                 <div class="div-block-169">
                                     <div class="decs_text_main">
                                         {{ item.PartNumber }}

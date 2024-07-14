@@ -3,14 +3,39 @@
     {% extends 'industrialpartner/base/base.html' %}
     {% load static %}
     {% block content %}
+
+    <!--For Mobile responsiveness-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        @media (max-width: 600px) { /* Adjust the max-width value as needed */
+            #search-icon {
+                display: none;
+            }
+            #loader{
+                display: none;
+            }
+            .spark-section{
+                padding-top: 10px;
+            }
+            .main_head_text{
+                font-size: 40px!important;
+            }
+            .spark-secondary-paragraph{
+                display: none;
+            }
+            .uui-testimonial18_slide-nav-3{
+                display: none;
+            }
+        }
+    </style>
     
-    <body>
-        
+    <body>        
         <div class="div-block-170">
             <div>
                 <a class="link-block-7 w-inline-block" data-w-id="84f11a31-5804-5e86-2f95-33e1ade34464" href="#" style="display:none">
                     <div class="text-block-69">
-                        <p style=" background-color: #eef5fc; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">View all Manufacturer</p>
+                        <p style=" background-color: #eef5fc; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">View all Brands</p>
                         <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
                           </svg></div>
@@ -22,7 +47,7 @@
                     <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7"/>
                       </svg></div>                      
-                    <p style=" background-color: #fdeeee; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">Close all Manufacturer's Tab</p>
+                    <p style=" background-color: #fdeeee; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">Close Tab</p>
                 </div>
             </a>
             <div class="all_brand_container" data-w-id="fa659da7-7c7b-717b-7583-e279b4d37481" style="display:block">
@@ -76,7 +101,7 @@
                 <!--container of select brand-->
                 <div class="brand_container" >
                     {% for manufacturer in manufacturers %}
-                        <div class="div-block-150" style="border-radius: 12px; padding-left: 10px; padding-right: 10px; border: 1px solid #a7a7a7; background-color: #fcfcfc!important">
+                        <div class="div-block-150" style=" font-size: 12px; border-radius: 12px; padding-left: 10px; padding-right: 10px; border: 1px solid #a7a7a7; background-color: #fcfcfc!important">
                             <a href="{% url 'manufacturer_prod' manufacturer_id=manufacturer.ManufacturerID %}" style="text-decoration: none; color:black;">
                                 <div id="{{ manufacturer.Manufacturer}}">
                                     {{ manufacturer.Manufacturer}}
@@ -145,7 +170,7 @@
             </div>
         </div>
         <div class="spark-section">
-            <div class="spark-container w-container" style="max-width: 950px;">
+            <div class="spark-container w-container" style="max-width: 1000px;">
                 <!--Search LOADER-->
                 <style>
                     /* Loader styles */
@@ -182,7 +207,7 @@
                     <form data-name="Email Form" data-wf-element-id="18c3fead-84f2-438d-be49-73f6830592e0" data-wf-page-id="66699e613a9f0781083938e0" id="email-form" method="get" action="{% url 'search_items' %}" value="{{ part_number }}" name="email-form"> 
                         <div class="f-field-wrapper">
                             <div class="f-field-icon-wrapper">
-                                <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R" id="Input-Field-Icon-R" maxlength="256" name="part_number" placeholder="Search for an Item by Part Number/Model Name" type="text"/>
+                                <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R" id="Input-Field-Icon-R" maxlength="256" name="part_number" placeholder="Enter PartNumber here!" type="text"/>
                                 <div id="loader" style="max-width: 50px;">
                                     <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmJtaXRsbzBuNnY3bXpiZW9vd2ppN2dzd3lybGF2bmV5NXQ4NXd3OCZlcD12MV9naWZzX3NlYXJjaCZjdD1z/NnSFnC428LRHaxUNzj/giphy.gif" alt="Loading...">
                                 </div>
@@ -200,17 +225,17 @@
                 </div>
             </div>
             
-            <div class="background-video w-background-video w-background-video-atom" data-autoplay="true" data-loop="true" data-poster-url="videos/ip2-poster-00001.jpg" data-video-urls="videos/ip2-transcode.mp4,videos/ip2-transcode.webm" data-wf-ignore="true" style="border-radius: 0.5em;">
-                <video autoplay="" data-object-fit="cover" data-wf-ignore="true" id="b2d18dd7-cd79-f266-db42-f00b29d115eb-video" loop="" muted="" playsinline="" style='background-image:url("videos/ip2-poster-00001.jpg")'>
-                    <source data-wf-ignore="true" src="{% static 'industrialpartner/videos/ip2-transcode.mp4' %}" type="video/mp4" />
-                    <source data-wf-ignore="true" src="{% static 'industrialpartner/videos/ip2-transcode.webm'} %" type="video/webm"/>
+            <div class="background-video w-background-video w-background-video-atom" data-autoplay="true" data-loop="true" data-poster-url="{% static 'industrialpartner/videos/ip11-poster-00001.jpg' %}" data-video-urls="videos/ip11-transcode.mp4,videos/ip11-transcode.webm" data-wf-ignore="true" style="border-radius: 0.8em;">
+                <video autoplay="" data-object-fit="cover" data-wf-ignore="true" id="b2d18dd7-cd79-f266-db42-f00b29d115eb-video" loop="" muted="" playsinline="" style='background-image:url("industrialpartner/videos/ip11-poster-00001.jpg")'>
+                    <source data-wf-ignore="true" src="{% static 'industrialpartner/videos/ip11-transcode.mp4' %}" type="video/mp4" />
+                    <source data-wf-ignore="true" src="{% static 'industrialpartner/videos/ip11-transcode.webm'} %" type="video/webm"/>
                 </video>
                 <div class="div-block-172">
                     <div class="spark-centered-900" style="margin-top: 60px!important">
-                        <h2 class="main_head_text">
+                        <h2 class="main_head_text" style="color: white; -webkit-text-stroke: 0;">
                             Ensuring Continued Performance of your Current and Legacy Equipment.
                         </h2>
-                        <p class="spark-secondary-paragraph">
+                        <p class="spark-secondary-paragraph" style="color: white;">
                             Keep your equipment running smoothly with our expert solutions. We ensure both current and legacy systems perform at their best, reducing downtime and boosting productivity. Trust us to maintain your equipment's efficiency and reliability.
                         </p>
                         <a class="button-2 w-button" href="{% url 'all_product'%}" style="display: inline-flex;">

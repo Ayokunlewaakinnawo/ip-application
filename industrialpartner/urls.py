@@ -3,10 +3,25 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import *
 
+from django.urls import path, register_converter
+
+# Define a custom path converter to allow slashes in slugs
+class SlugWithSlashConverter:
+    regex = '[-a-zA-Z0-9_/]+'
+
+    def to_python(self, value):
+        return value
+
+    def to_url(self, value):
+        return value
+
+# Register the custom converter
+register_converter(SlugWithSlashConverter, 'slugwithslash')
+
 urlpatterns = [
     path('', home, name='home'),
     path('manufacturer_prod/<int:manufacturer_id>/', manufacturer_prod, name='manufacturer_prod'),
-    path('product/<int:item_id>/', product, name='product'),
+    path('product/<int:item_id>/<slugwithslash:slug>', product, name='product'),
     path('all_product', all_product, name='all_product'),
     path('add_to_cart/<int:item_id>/', add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<int:item_id>/', remove_from_cart, name='remove_from_cart'),
@@ -17,10 +32,14 @@ urlpatterns = [
     path('contact', contact, name='contact'),
     path('about', about, name='about'),
     path('ser_rqst', ser_rqst, name='ser_rqst'),
-    path('success', success, name='success'),
+    path('&/', success, name='success'),
     path('cart/count/', cart_count, name='cart_count'),
     #path('<str:manufacturer>/', manufacturer_prod_page, name='manufacturer_prod_page'),
     path('filtered', filter_view, name='filter_view'),
+    path('sitemap_loading...', sitemap_loading, name='sitemap_loading'),
+    path('sitemap_products/<manufacturer_id>/', sitemap_products, name='sitemap_products'),
+    path('sitemap/data/', sitemap_data_load, name='sitemap_data_load'),
+    path('sitemap', sitemap, name='sitemap'),
 ]
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

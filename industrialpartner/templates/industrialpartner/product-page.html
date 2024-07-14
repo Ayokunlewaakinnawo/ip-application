@@ -160,6 +160,8 @@
                                     </div>
                                     <input class="f-field-input-2 w-input" data-name="Modal QTY 2" id="id_quantity" maxlength="256" name="quantity" placeholder="" required="" type="number"/>
                                 </div>
+                                <input class="f-field-input-2 w-input" data-name="Modal PW 2" id="id_comments" maxlength="256" name="comments" type="hidden" value="Quote request from Ind.Part-django"/>
+
                                 <div class="f-field-wrapper-2" id="w-node-f9131947-9fab-2ff8-867d-5174b4498793-33a605de">
                                     <input class="f-field-input-2 w-input" data-name="Modal PW 2" id="id_first_name" maxlength="256" name="first_name" placeholder="First Name" type="text" value="{{ form.first_name.value }}"/>
                                 </div>
@@ -274,6 +276,10 @@
                             <h2 class="uui-heading-medium-30">
                                 {{item_data.Manufacturer.Manufacturer}} {{item_data.PartNumber}}
                             </h2>
+                            <div>
+                                <p style="font-size: 11px; color: #333;">Brand: <span style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;">{{item_data.Manufacturer.Manufacturer}}</span></p>
+                                <p style="font-size: 11px; color: #333;">Part Number / Model Number: <span style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;">{{item_data.PartNumber}}</span></p>
+                            </div>
                             <div class="uui-heading-subheading-32">
                                 Description
                             </div>

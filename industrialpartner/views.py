@@ -7,8 +7,11 @@ from .models import Product
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 
-
+#Handling 404 Page
+def custom_404(request, exception):
+    return render(request, 'industrialpartner/404.html', status=404)
 
 def fetch_paginated_data(brand_name, page):
     response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
@@ -101,8 +104,12 @@ def manufacturer_prod_page(request, manufacturer):
     return render(request, 'industrialpartner/manufacture-product.html', context)
 
 
-def fetch_paginated_data_items(manufacturer_id, page):
+def fetch_paginated_data_items(manufacturer_id, page, part_number=None):
     api_endpoint = f"http://174.46.4.71/items?manufacturer_id={manufacturer_id}&page={page}"
+    #if part_number of the particular manufacture is queried
+    if part_number:
+        api_endpoint += f"&part_number={part_number}"
+        
     response = requests.get(api_endpoint)
     if response.status_code == 200:
         return response.json()
@@ -111,9 +118,10 @@ def fetch_paginated_data_items(manufacturer_id, page):
 def manufacturer_prod(request, manufacturer_id):
     # Get the current page number from the request, default to 1 if not provided
     page_number = request.GET.get('page', 1)
+    part_number = request.GET.get('part_number', '')
 
     # Fetch data from the API
-    data = fetch_paginated_data_items(manufacturer_id, page_number)
+    data = fetch_paginated_data_items(manufacturer_id, page_number, part_number)
 
     items = data.get('items', [])
     total_items = data.get('total', 0)
@@ -143,13 +151,14 @@ def manufacturer_prod(request, manufacturer_id):
         'manufacturer_name': manufacturer_name,
         'total_pages': total_pages,
         'current_page': int(page_number),
+        'part_number': part_number,
     }
 
     return render(request, 'industrialpartner/manufacture-product.html', context)
 
 
 
-def product(request, item_id):
+def product(request, item_id, slug):
     api_endpoint = f"http://174.46.4.71/items/{item_id}"
     
     try:
@@ -159,6 +168,10 @@ def product(request, item_id):
         
         # Convert the response to JSON format
         item_data = response.json()
+
+        # Check if the provided slug matches the slug from the API
+        if slug != item_data.get('Slug'):
+            return HttpResponse("Invalid slug", status=404)
 
         # Pass the item data to the template
         context = {
@@ -183,6 +196,7 @@ def fetch_paginated_data_all_items(page):
     if response.status_code == 200:
         return response.json()
     return {}
+
 
 def all_product(request):
     # Get the current page number from the request, default to 1 if not provided
@@ -453,3 +467,128 @@ def filter_view(request):
     }
 
     return render(request, 'industrialpartner/main.html', context)
+
+
+
+#SITEMAP LOGIC
+def fetch_all_data_load(brand_name, page):
+    response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    return {'items': [], 'pages': 0}
+
+def sitemap_data_load(request):
+    brand_name = request.GET.get('brand_name', '')
+    page = int(request.GET.get('page', 1))
+    
+    data = fetch_all_data_load(brand_name, page)
+    items = data.get('items', [])
+    for manufacturer in items:
+        manufacturer_attributes = {}
+        manufacturer_name = manufacturer.get('ManufacturerStandardized', '')
+        if manufacturer_name:
+            first_letter = manufacturer_name[0].upper()
+            attribute_name = f'Manufacturer_{first_letter}'
+            manufacturer_attributes[attribute_name] = manufacturer_name
+        manufacturer.update(manufacturer_attributes)
+
+    return JsonResponse({'manufacturers': items, 'pages': data.get('pages', 0), 'current_page': page})
+
+def sitemap_loading(request):
+    brand_name = request.GET.get('brand_name', '')
+    
+    context = {
+        'brand_name': brand_name,
+    }
+    
+    return render(request, 'industrialpartner/sitemap_loading.html', context)
+
+
+def fetch_all_data_main(brand_name):
+    all_items = []
+    page = 1
+    
+    while True:
+        response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
+        if response.status_code == 200:
+            data = response.json()
+            items = data.get('items', [])
+            if not items:
+                break
+            all_items.extend(items)
+            total_pages = data.get('pages', 1)
+            if page >= total_pages:
+                break
+            page += 1
+        else:
+            break
+    
+    return {
+        'items': all_items
+    }
+
+@cache_page(60 * 30)  # Cache the view for 15 minutes
+def sitemap(request):
+    brand_name = request.GET.get('brand_name', '')  # Default to 'A' if not specified
+        
+    data = fetch_all_data_main(brand_name)
+    
+    items = data.get('items', [])
+    # Modify the manufacturer objects to include attributes for each brand name
+    for manufacturer in items:
+        #print(manufacturer)  # Print the manufacturer object to debug
+        manufacturer_attributes = {}
+        manufacturer_name = manufacturer.get('ManufacturerStandardized', '')
+        if manufacturer_name:
+            first_letter = manufacturer_name[0].upper()
+            attribute_name = f'Manufacturer_{first_letter}'
+            manufacturer_attributes[attribute_name] = manufacturer_name
+        manufacturer.update(manufacturer_attributes)
+
+
+    context = {
+        'manufacturers': items,  # Pass all items to the template
+        'brand_name': brand_name,
+    }
+    return render(request, 'industrialpartner/sitemap.html', context)
+
+
+def fetch_all_item_data(manufacturer_id):
+    all_items = []
+    page = 1
+
+    while True:
+        response = requests.get(f"http://174.46.4.71/items?manufacturer_id={manufacturer_id}&page={page}")
+        if response.status_code == 200:
+            data = response.json()
+            items = data.get('items', [])
+            if not items:
+                break
+            all_items.extend(items)
+            total_pages = data.get('pages', 1)
+            if page >= total_pages:
+                break
+            page += 1
+        else:
+            break
+    
+    return {
+        'items': all_items
+    }
+
+@cache_page(60 * 15)  # Cache the view for 15 minutes
+def sitemap_products(request, manufacturer_id):
+    # Fetch data from the API
+    data = fetch_all_item_data(manufacturer_id)
+
+    items = data.get('items', [])
+    manufacturer_name = items[0]['Manufacturer']['Manufacturer'] if items else ""
+
+    context = {
+        'manufacturer_id': manufacturer_id,
+        'items': items,
+        'manufacturer_name': manufacturer_name,
+    }
+
+    return render(request, 'industrialpartner/sitemap-2.html', context)

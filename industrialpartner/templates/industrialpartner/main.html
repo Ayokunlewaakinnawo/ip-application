@@ -4,6 +4,20 @@
     {% load static %}
     {% block content %}
     <body>
+        <!--Mobile Responsiveness-->
+        <style>
+            @media (max-width: 600px) { /* Adjust the max-width value as needed */
+                #search-icon {
+                    display: none;
+                }
+                #loader{
+                    display: none;
+                }
+                .spark-section{
+                    padding-top: 10px;
+                }
+            }
+        </style>
         <div class="modal-_main" data-w-id="f9e5798a-ad5a-23fb-4a0d-62b0f863464a" style="display:none">
             <div class="div-block-10">
                 <div class="f-modal-base-large">
@@ -42,7 +56,7 @@
                                         <div id="selectedPartNumberDisplay">
                                             <!--Displayed Partnumber-->
                                         </div>
-                                        <p style="font-size: 11px;">Brand: <span style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;">{{ items.Manufacturer.Manufacturer}}</span></p>
+                                        <p style="font-size: 11px;">Brand: <span id="selectedBrandDisplay" style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;"> </span></p>
                                     </div>
                                 </div>
                                 <input type="hidden" id="hiddenItemID" name="item_id" value="">
@@ -161,48 +175,8 @@
             </div>
         </div>
 
-        <style>
-            .loader {
-                display: none;
-                border: 4px solid #f3f3f3;
-                border-radius: 50%;
-                border-top: 4px solid #3498db;
-                width: 12px;
-                height: 12px;
-                -webkit-animation: spin 1s linear infinite;
-                animation: spin 1s linear infinite;
-                margin-left: 5px;
-            }
-    
-            @-webkit-keyframes spin {
-                0% { -webkit-transform: rotate(0deg); }
-                100% { -webkit-transform: rotate(360deg); }
-            }
-    
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-    
-            .disabled {
-                pointer-events: none;
-                opacity: 0.6;
-            }
-    
-            .message-container {
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background-color: #d4edda;
-                color: #155724;
-                padding: 10px 20px;
-                border-radius: 5px;
-                display: none;
-                z-index: 9999;
-            }
-        </style>
-
+        
+        <!--Main Page Content-->
         <div class="spark-section">
             <div class="w-layout-layout wf-layout-layout" id="w-node-_119b83e3-4584-e804-a84e-08647a63c6d4-1d0e8c4d">
                 <!--FILTER CELL-->
@@ -219,6 +193,12 @@
                                     }
                                 </script>
                                 <form data-name="Email Form" data-wf-element-id="ef43463b-c9f4-147a-af80-42fd2fff1e7f" data-wf-page-id="666af3d8b3c91edd1d0e8c4d" id="filter-form" method="get" name="email-form" action="{% url 'filter_view' %}">
+                                    <style>
+                                        .w-checkbox-input {
+                                            padding-right:1.4px ;
+                                            padding-bottom: 7px;
+                                        }
+                                    </style>
                                     <label class="w-checkbox f-checkbox-field">
                                         <div style="padding-left: 1.5px; padding-top: 1.5px;" class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox" onclick="toggleCheckbox('Checkbox-2')">
                                             <input data-name="manufacturer" id="manufacturer" name="manufacturer" type="checkbox" value="Kontron" {% if selected_manufacturer == 'Kontron' %}checked{% endif %} onclick="submitForm()">
@@ -231,6 +211,13 @@
                                             <input data-name="manufacturer" id="manufacturer" name="manufacturer" type="checkbox" value="Portwell" {% if selected_manufacturer == 'Portwell' %}checked{% endif %} onclick="submitForm()">
                                         </div>
                                         <span class="w-form-label" for="Checkbox-2">Portwell</span>
+                                    </label>
+
+                                    <label class="w-checkbox f-checkbox-field">
+                                        <div style="padding-left: 1.5px; padding-top: 1.5px;" class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox" onclick="toggleCheckbox('Checkbox-2')">
+                                            <input data-name="manufacturer" id="manufacturer" name="manufacturer" type="checkbox" value="Advantech" {% if selected_manufacturer == 'Advantech' %}checked{% endif %} onclick="submitForm()">
+                                        </div>
+                                        <span class="w-form-label" for="Checkbox-2">Advantech</span>
                                     </label>
 
                                     <label class="w-checkbox f-checkbox-field">
@@ -373,9 +360,16 @@
 
                                     <label class="w-checkbox f-checkbox-field">
                                         <div style="padding-left: 1.5px; padding-top: 1.5px;" class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox" onclick="toggleCheckbox('Checkbox-2')">
-                                            <input data-name="simpletype" id="simpletype" name="simpletype" type="checkbox" value="Panel PC" {% if selected_simpletype == '"Panel PC"' %}checked{% endif %} onclick="submitForm()">
+                                            <input data-name="simpletype" id="simpletype" name="simpletype" type="checkbox" value="Panel PC" {% if selected_simpletype == 'Panel PC' %}checked{% endif %} onclick="submitForm()">
                                         </div>
                                         <span class="w-form-label" for="Checkbox-2">Panel PC</span>
+                                    </label>
+
+                                    <label class="w-checkbox f-checkbox-field">
+                                        <div style="padding-left: 1.5px; padding-top: 1.5px;" class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox" onclick="toggleCheckbox('Checkbox-2')">
+                                            <input data-name="simpletype" id="simpletype" name="simpletype" type="checkbox" value="Relay" {% if selected_simpletype == 'Relay' %}checked{% endif %} onclick="submitForm()">
+                                        </div>
+                                        <span class="w-form-label" for="Checkbox-2">Relay</span>
                                     </label>
 
                                     <label class="w-checkbox f-checkbox-field">
@@ -390,6 +384,13 @@
                                             <input data-name="simpletype" id="simpletype" name="simpletype" type="checkbox" value="Backplane" {% if selected_simpletype == 'Backplane' %}checked{% endif %} onclick="submitForm()">
                                         </div>
                                         <span class="w-form-label" for="Checkbox-2">Backplane</span>
+                                    </label>
+
+                                    <label class="w-checkbox f-checkbox-field">
+                                        <div style="padding-left: 1.5px; padding-top: 1.5px;" class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox" onclick="toggleCheckbox('Checkbox-2')">
+                                            <input data-name="simpletype" id="simpletype" name="simpletype" type="checkbox" value="Motherboard" {% if selected_simpletype == 'Motherboard' %}checked{% endif %} onclick="submitForm()">
+                                        </div>
+                                        <span class="w-form-label" for="Checkbox-2">Motherboard</span>
                                     </label>
 
                                     <label class="w-checkbox f-checkbox-field">
@@ -427,159 +428,16 @@
                                         <span class="w-form-label" for="Checkbox-2">Contactors</span>
                                     </label>
                                     <!-- Add other simpletype checkboxes here in a similar manner -->
-                                    
 
                                 </form>
                                 
                             </div>
                         </div>
-                        <div class="dropdown-3 w-dropdown" data-delay="0" data-hover="false">
-                            <div class="dropdown-toggle w-dropdown-toggle">
-                                <div class="w-icon-dropdown-toggle">
-                                </div>
-                                <div>
-                                    Categories
-                                </div>
-                            </div>
-
-                            <!--Mobile filter Selector-->
-                            <nav class="w-dropdown-list">
-                                <a class="w-dropdown-link" href="#">
-                                    Link 1
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 2
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 3
-                                </a>
-                            </nav>
-                        </div>
+                       
                     </div>
 
                     <!--Here is where the mobile view for category-->
-                    <div class="div-block-5">
-                        <div class="div-block-2">
-                            <h6>
-                                
-                            </h6>
-                            <div class="w-form">
-                                
-                                
-                            </div>
-                        </div>
-                        <div class="dropdown w-dropdown" data-delay="0" data-hover="false">
-                            <div class="w-dropdown-toggle">
-                                <div class="w-icon-dropdown-toggle">
-                                </div>
-                                <div>
-                                    Category
-                                </div>
-                            </div>
-                            <nav class="w-dropdown-list">
-                                <a class="w-dropdown-link" href="#">
-                                    Link 1
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 2
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 3
-                                </a>
-                            </nav>
-                        </div>
-                    </div>
-
-                    <!--Condition Filter-->
-                    <div class="div-block-6">
-                        <div class="div-block-3">
-                            <h6>
-                                Conditions
-                            </h6>
-                            <div class="w-form">
-                                <form data-name="Email Form" data-wf-element-id="e6217db6-89d3-ac88-715b-3fc75d302a84" data-wf-page-id="666af3d8b3c91edd1d0e8c4d" id="email-form" method="get" name="email-form">
-                                    {% csrf_token %}
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            New
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            New Surplus
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            Used (Grade A)
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            Used (Grade B)
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            Used (Grade C)
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            Refurbished
-                                        </span>
-                                    </label>
-                                    <label class="w-checkbox f-checkbox-field">
-                                        <div class="w-checkbox-input w-checkbox-input--inputType-custom f-checkbox">
-                                        </div>
-                                        <input data-name="Checkbox 2" id="Checkbox-2" name="Checkbox-2" style="opacity:0;position:absolute;z-index:-1" type="checkbox"/>
-                                        <span class="w-form-label" for="Checkbox-2">
-                                            For Parts
-                                        </span>
-                                    </label>
-                                </form>
-                                
-                            </div>
-                        </div>
-                        <div class="dropdown-2 w-dropdown" data-delay="0" data-hover="false">
-                            <div class="w-dropdown-toggle">
-                                <div class="w-icon-dropdown-toggle">
-                                </div>
-                                <div>
-                                    Dropdown
-                                </div>
-                            </div>
-                            <nav class="w-dropdown-list">
-                                <a class="w-dropdown-link" href="#">
-                                    Link 1
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 2
-                                </a>
-                                <a class="w-dropdown-link" href="#">
-                                    Link 3
-                                </a>
-                            </nav>
-                        </div>
-                    </div>
+                    
 
                 </div>
                 <!--PRODUCT LIST CELL-->  
@@ -621,8 +479,8 @@
                     <div class="pagination">
                         <span class="step-links">
                             {% if current_page > 1 %}
-                                <a href="?manufacturer_id={{ manufacturer_id }}&page=1">&laquo; First</a>
-                                <a href="?manufacturer_id={{ manufacturer_id }}&page={{ current_page|add:"-1" }}">Previous</a>
+                                <a id="first" href="?manufacturer_id={{ manufacturer_id }}&simpletype={{ selected_simpletype }}&manufacturer={{ selected_manufacturer }}&page=1">&laquo; First</a>
+                                <a href="?manufacturer_id={{ manufacturer_id }}&simpletype={{ selected_simpletype }}&manufacturer={{ selected_manufacturer }}&page={{ current_page|add:"-1" }}">Previous</a>
                             {% else %}
                                 <span class="disabled">&laquo; First</span>
                                 <span class="disabled">Previous</span>
@@ -633,14 +491,15 @@
                             </span>
 
                             {% if current_page < total_pages %}
-                                <a href="?manufacturer_id={{ manufacturer_id }}&page={{ current_page|add:"1" }}">Next</a>
-                                <a href="?manufacturer_id={{ manufacturer_id }}&page={{ total_pages }}">Last &raquo;</a>
+                                <a href="?manufacturer_id={{ manufacturer_id }}&simpletype={{ selected_simpletype }}&manufacturer={{ selected_manufacturer }}&page={{ current_page|add:"1" }}">Next</a>
+                                <a id="last" href="?manufacturer_id={{ manufacturer_id }}&simpletype={{ selected_simpletype }}&manufacturer={{ selected_manufacturer }}&page={{ total_pages }}">Last &raquo;</a>
                             {% else %}
                                 <span class="disabled">Next</span>
                                 <span class="disabled">Last &raquo;</span>
                             {% endif %}
                         </span>
                     </div>
+
                     <script>
                         document.addEventListener('DOMContentLoaded', function () {
                             const paginationLinks = document.querySelectorAll('.pagination a');
@@ -666,7 +525,7 @@
                             {% for item in items %}
                                 <div class="prod product_card" id="w-node-_165853b9-2f6d-b07d-5c69-3594009cfa04-1d0e8c4d">
                                     <div class="uui-team04_item">
-                                        <a href="{% url 'product' item_id=item.ItemID%}">
+                                        <a href="{% url 'product' item_id=item.ItemID slug=item.Slug%}">
                                         <div class="uui-team04_image-wrapper">
                                             <img alt="" class="uui-team04_image" loading="lazy" src="{% static 'industrialpartner/images/test-selling-product.jpg' %}"/>
                                         </div>
@@ -675,7 +534,7 @@
                                             <div class="uui-heading-tiny-11">
                                                 {{ item.PartNumber }}
                                             </div>
-                                            <p style="font-size: 11px;">Brand: <span style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;">{{ item.Manufacturer.Manufacturer }}</span></p>
+                                            <p style="font-size: 11px; color: #333;">Brand: <span style="border-radius: 10px; background-color: #e2f0ff; color: #007bff; padding: 2.5px 10px;">{{ item.Manufacturer.Manufacturer }}</span></p>
                                         </div>
                                         <div class="div-block-160">
                                             <div class="uui-text-size-medium-35">
@@ -697,7 +556,7 @@
                                                 </div>
                                             </a>
                                             
-                                            <a class="uui-button-47 w-inline-block" data-w-id="7fb1e194-d3c1-4b11-1552-70e0d88170be" href="#" onclick="setSelectedValues('{{ item.PartNumber }}', '{{ item.ItemID }}')">
+                                            <a class="uui-button-47 w-inline-block" data-w-id="7fb1e194-d3c1-4b11-1552-70e0d88170be" href="#" onclick="setSelectedValues('{{ item.PartNumber }}', '{{ item.ItemID }}', '{{ item.Manufacturer.Manufacturer }}')">
                                                 <div class="div-block-163">
                                                     <div class="text-block-66">
                                                         Quote Request
@@ -715,7 +574,9 @@
                                 </div>
                             {% endfor %}
                         {% else %}
-                            <p>No results found.</p>
+                            <div style="display: flex; text-align: center;">
+                                <p style="color: black;">No results found.</p>
+                            </div>
                         {% endif %}
                         
                     </div>
@@ -727,13 +588,16 @@
         </script>
         <script src="{% static 'industrialpartner/js/webflow.js' %}" type="text/javascript">
         </script>
+        
          <!--To parse the Item into the Quote Rqst Modal-->
          <script>
-            function setSelectedValues(partNumber, itemId) {
+            function setSelectedValues(partNumber, itemId, Manufacturer) {
                 console.log('Selected Part Number:', partNumber);
+                console.log('Selected Manufacturer:', Manufacturer);
                 console.log('Selected Item ID:', itemId);
                 
                 document.getElementById('selectedPartNumberDisplay').innerText = partNumber;
+                document.getElementById('selectedBrandDisplay').innerText = Manufacturer;
                 document.getElementById('hiddenItemID').value = itemId;
             }
         </script>

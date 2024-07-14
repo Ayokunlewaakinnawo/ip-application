@@ -33,11 +33,39 @@
                 z-index: 9999; /* Ensure it's above other content */
             }
         </style>
+        
     </head>
     <body>
         <!--NAVIGATION BAR-->
+        <!--Mobile Responsiveness-->
+        <style>
+            @media (max-width: 600px) { /* Adjust the max-width value as needed */
+                .f-banner {
+                    display: none;
+                }
+            }
+        </style>
 
         <div class="uui-navbar01_component-2 w-nav" data-animation="default" data-collapse="medium" data-duration="400" data-easing="ease" data-easing2="ease" data-w-id="730e9784-f4c7-bb04-0fbe-c2b68150e109" role="banner">
+            <style>
+                .f-banner{
+                    background-image: linear-gradient(45deg, #0045f4, #1f66e8, #0b9dff, #2352fe, #115eaa, #1eb4f0, #2a68f9, #27b1db);
+                    color: white;
+                    /-webkit-background-clip: text; /* Edge, Chrome */
+                    /background-clip: text; /* Safari, FF */
+                    animation: gradientAnimation 8s linear infinite;
+                    animation-direction: alternate;
+                    background-size: 300% 100%;
+                }
+                @keyframes gradientAnimation {
+                    0% {
+                        background-position: 0;
+                    }
+                    to {
+                        background-position: 100%;
+                    }
+                    }
+            </style>
             <div class="f-banner">
                 <div class="f-banner-flex-row">
                     <div class="f-icon-regular w-embed">
@@ -215,7 +243,7 @@
                                                         </div>
                                                     </div>
                                                 </a>
-                                                <a class="uui-navbar01_dropdown-link-2 w-inline-block" href="#">
+                                                <a class="uui-navbar01_dropdown-link-2 w-inline-block" href="{% url 'sitemap_loading'%}">
                                                     <div class="uui-navbar01_icon-wrapper-2">
                                                         <div class="uui-icon-1x1-xsmall-23 text-color-primary600 w-embed">
                                                             <svg fill="none" height="24" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -227,16 +255,16 @@
                                                     <div class="uui-navbar01_item-right-2">
                                                         <div class="uui-navbar01_text-wrapper-2">
                                                             <div class="uui-navbar01_item-heading-2 margin-bottom-0">
-                                                                Careers
+                                                                Sitemap
                                                             </div>
                                                             <div class="uui-badge-small-success-6">
                                                                 <div>
-                                                                    coming soon!
+                                                                
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div class="uui-text-size-small-26 hide-mobile-landscape">
-                                                            We’re always looking for talented people. Join our team!
+                                                            Explore our comprehensive sitemap to navigate our site effortlessly.
                                                         </div>
                                                     </div>
                                                 </a>
@@ -377,7 +405,7 @@
                 <div class="w-layout-grid f-footer-top-grid">
                     <div class="f-footer-content">
                         <div class="f-margin-bottom-50">
-                            <a class="f-footer-logo w-inline-block" href="#">
+                            <a class="f-footer-logo w-inline-block" href="{% url 'home'%}">
                                 <img alt="" loading="lazy" src="{% static 'industrialpartner/images/Industrial-Partner-logo2.png' %}" width="124"/>
                             </a>
                         </div>
@@ -391,19 +419,19 @@
                         <div class="f-footer-title">
                             SITE
                         </div>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'sitemap_loading'%}" target="_blank">
                             <div>
                                 SiteMap
                             </div>
                         </a>
                         <a class="f-footer-link w-inline-block" href="#">
                             <div>
-                                Footer Link
+                                
                             </div>
                         </a>
                         <a class="f-footer-link w-inline-block" href="#">
                             <div>
-                                Footer Link
+                                
                             </div>
                         </a>
                     </div>
@@ -411,19 +439,19 @@
                         <div class="f-footer-title">
                             SERVICES
                         </div>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'ser_rqst'%}">
                             <div>
                                 Service Repair
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'all_product'%}">
                             <div>
                                 Quotes Request
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'contact'%}">
                             <div>
-                                Footer Link
+                                Consultation
                             </div>
                         </a>
                     </div>
@@ -431,23 +459,23 @@
                         <div class="f-footer-title">
                             INFORMATIONS
                         </div>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'about'%}">
                             <div>
                                 About Us
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'home'%}">
                             <div>
                                 Manufacturers Links
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'all_product'%}">
                             <div>
-                                Footer Link
+                                Product Catalog
                             </div>
                         </a>
                     </div>
-                    <div class="f-footer-block">
+                    <div class="f-footer-block" style="display: none;">
                         <div class="f-footer-title">
                             POLICIES
                         </div>
@@ -471,19 +499,19 @@
                         <div class="f-footer-title">
                             RESOURCES
                         </div>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="{% url 'contact'%}">
                             <div>
-                                Footer Link
+                                Partner with Us
+                            </div>
+                        </a>
+                        <a class="f-footer-link w-inline-block" href="{% url 'home'%}#featured">
+                            <div>
+                                Featured Product
                             </div>
                         </a>
                         <a class="f-footer-link w-inline-block" href="#">
                             <div>
-                                Footer Link
-                            </div>
-                        </a>
-                        <a class="f-footer-link w-inline-block" href="#">
-                            <div>
-                                Footer Link
+                            
                             </div>
                         </a>
                     </div>
@@ -491,18 +519,18 @@
                         <div class="f-footer-title">
                             CONTACT US
                         </div>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="tel:+19722344343">
                             <div>
                                 +1-972-234-4343
                                 <br/>
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="tel:+18009410322">
                             <div>
                                 1-800-941-0322
                             </div>
                         </a>
-                        <a class="f-footer-link w-inline-block" href="#">
+                        <a class="f-footer-link w-inline-block" href="mailto:sales@industrialpartner.com">
                             <div>
                                 sales@industrialpartner.com
                             </div>
