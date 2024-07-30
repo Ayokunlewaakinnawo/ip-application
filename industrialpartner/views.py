@@ -82,13 +82,13 @@ def home(request):
 
         if not data.get('items'):
             data = fetch_data(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page_number}")
-            
-            return render_index_page(request, data, brand_name, page_number)
+            cleaned_url = full_url.replace(f"{subdomain}.", "")
+            return render_index_page(request, data, brand_name, page_number, cleaned_url)
         else:
             return render_manufacturer_page(request, data, manufacturer, page_number, part_number)
     else:
         data = fetch_data(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page_number}")
-        return render_index_page(request, data, brand_name, page_number)
+        return render_index_page(request, data, brand_name, page_number, full_url)
 
 def render_index_page(request, data, brand_name, page_number):
     items = data.get('items', [])
