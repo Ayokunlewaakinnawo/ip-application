@@ -86,9 +86,21 @@ def home(request):
             # Rebuild the netloc with the stripped of subdomain that does not exit or empty data.get(items)
             #new_netloc = f"{parts[1]}" 
             #print(parts)
-            
+            if len(parts) > 1:
+                part_url = '.'.join(parts[1:])
+            # Rebuild the URL
+            new_url = urlunparse((
+                parsed_url.scheme,
+                part_url,
+                '/',  # Redirect to the root path of the new subdomain
+                parsed_url.params,
+                parsed_url.query,
+                parsed_url.fragment
+            ))
+            print(new_url)
+            return HttpResponseRedirect(new_url)
             #return HttpResponseRedirect(new_url)
-            return render_index_page(request, data, brand_name, page_number)
+            #return render_index_page(request, data, brand_name, page_number)
         else:
             return render_manufacturer_page(request, data, manufacturer, page_number, part_number)
     else:
