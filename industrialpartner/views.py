@@ -1,38 +1,100 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import requests
-from django.http import HttpResponse, JsonResponse
-from .forms import QuoteRequestForm, QuoteRequestFormCart
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from .forms import QuoteRequestForm, QuoteRequestFormCart, QuoteAddon, QuoteAddonInfo
 from .models import Product
 from django.contrib import messages
 from django.utils.safestring import mark_safe
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
+from urllib.parse import urlparse, urlunparse, urlunsplit
+from django.views.decorators.csrf import csrf_exempt
+
+def get_subdomain(request):
+    """
+    Extracts the subdomain from the request URL.
+
+    Args:
+        request (HttpRequest): The Django HttpRequest object.
+
+    Returns:
+        str: The subdomain if it exists, otherwise None.
+    """
+    full_url = request.build_absolute_uri()
+    parsed_url = urlparse(full_url)
+    netloc = parsed_url.netloc
+    parts = netloc.split('.')
+    subdomain = parts[0] if parts and len(parts) > 1 else None
+    return subdomain
 
 #Handling 404 Page
 def custom_404(request, exception):
-    return render(request, 'industrialpartner/404.html', status=404)
+    subdomain = get_subdomain(request)
 
-def fetch_paginated_data(brand_name, page):
-    response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
+    manufacturer = subdomain
+    context = {
+        'manufacturer': manufacturer,
+    }
+    return render(request, 'industrialpartner/404.html', context, status=404)
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+def fetch_data(url):
+    response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     return {}
 
+def get_paginated_data(api_endpoint, page, additional_params=None):
+    if additional_params:
+        api_endpoint += additional_params
+    return fetch_data(f"{api_endpoint}&page={page}")
+
+@cache_page(60 * 15)  # Cache the view for 15 minutes
 def home(request):
-    brand_name = request.GET.get('brand_name', 'A')  # Default to 'A' if not specified
+    full_url = request.build_absolute_uri()
+    parsed_url = urlparse(full_url)
+    netloc = parsed_url.netloc
+    parts = netloc.split('.')
+    subdomain = parts[0] if parts and len(parts) > 1 else None
+
     page_number = request.GET.get('page', 1)
-        
-    data = fetch_paginated_data(brand_name, page_number)
-    
+    part_number = request.GET.get('part_number', '')
+    brand_name = request.GET.get('brand_name', '')
+
+    if subdomain:
+        manufacturer = subdomain.upper()
+        additional_params = f"&part_number={part_number}" if part_number else ""
+        data = get_paginated_data(f"http://174.46.4.71/items?manufacturer_lookup={manufacturer}", page_number, additional_params)
+
+        if not data.get('items'):
+            data = fetch_data(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page_number}")
+            # Check if there is a subdomain and strip it off
+            # Rebuild the netloc with the stripped of subdomain that does not exit or empty data.get(items)
+            #new_netloc = f"{parts[1]}" 
+            #print(parts)
+            
+            #return HttpResponseRedirect(new_url)
+            return render_index_page(request, data, brand_name, page_number)
+        else:
+            return render_manufacturer_page(request, data, manufacturer, page_number, part_number)
+    else:
+        data = fetch_data(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page_number}")
+        return render_index_page(request, data, brand_name, page_number)
+
+def render_index_page(request, data, brand_name, page_number):
     items = data.get('items', [])
-    total_items = data.get('total', 0)
     page_size = data.get('size', 50)
     total_pages = data.get('pages', 1)
 
-    
     paginator = Paginator(items, page_size)
-
     try:
         current_page = paginator.page(page_number)
     except PageNotAnInteger:
@@ -40,17 +102,6 @@ def home(request):
     except EmptyPage:
         current_page = paginator.page(paginator.num_pages)
 
-    # Modify the manufacturer objects to include attributes for each brand name
-    for manufacturer in current_page.object_list:
-        manufacturer_attributes = {}
-        for letter in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ':
-            attribute_name = f'Manufacturer_{letter}'
-            if attribute_name in manufacturer:
-                manufacturer_attributes[attribute_name] = manufacturer[attribute_name]
-        manufacturer.update(manufacturer_attributes)
-
-    #Getting Featured Product from app home db
-    # Fetch all Product objects from the database
     products = Product.objects.all()
 
     context = {
@@ -63,10 +114,44 @@ def home(request):
 
     return render(request, 'industrialpartner/index.html', context)
 
+def render_manufacturer_page(request, data, manufacturer, page_number, part_number):
+    items = data.get('items', [])
+    page_size = data.get('size', 50)
+    total_pages = data.get('pages', 1)
 
-#For the url manufacturer pages
-def fetch_paginated_data_manufacturer_page(manufacturer, page):
+    paginator = Paginator(items, page_size)
+    try:
+        current_page = paginator.page(page_number)
+    except PageNotAnInteger:
+        current_page = paginator.page(1)
+    except EmptyPage:
+        current_page = paginator.page(paginator.num_pages)
+
+    manufacturer_info = items[0]['Manufacturer']['Synopsis'] if items else ""
+    first_six_items = items[:6]
+    remaining_items = items[6:]
+
+    context = {
+        'manufacturer': manufacturer,
+        'manufacturer_id': items[0]['Manufacturer']['ManufacturerID'] if items else '',
+        'manufacturer_info': manufacturer_info,
+        'first_six_items': first_six_items,
+        'remaining_items': remaining_items,
+        'manufacturer_name': items[0]['Manufacturer']['Manufacturer'] if items else '',
+        'total_pages': total_pages,
+        'current_page': int(page_number),
+        'part_number': part_number,
+    }
+
+    return render(request, 'industrialpartner/manufacture-product-2.html', context)
+
+#================For the url manufacturer pages not in use===============
+def fetch_paginated_data_manufacturer_page(manufacturer, page, part_number=None):
     api_endpoint = f"http://174.46.4.71/items?manufacturer={manufacturer}&page={page}"
+    #if part_number of the particular manufacture is queried
+    if part_number:
+        api_endpoint += f"&part_number={part_number}"
+
     response = requests.get(api_endpoint)
     if response.status_code == 200:
         return response.json()
@@ -101,7 +186,8 @@ def manufacturer_prod_page(request, manufacturer):
         'current_page': int(page_number),
     }
 
-    return render(request, 'industrialpartner/manufacture-product.html', context)
+    return render(request, 'industrialpartner/manufacture-product-2.html', context)
+#========================================================================
 
 
 def fetch_paginated_data_items(manufacturer_id, page, part_number=None):
@@ -116,6 +202,11 @@ def fetch_paginated_data_items(manufacturer_id, page, part_number=None):
     return {}
 
 def manufacturer_prod(request, manufacturer_id):
+    full_url = request.build_absolute_uri()
+    parsed_url = urlparse(full_url)
+    # Extract the current netloc (host and port)
+    current_netloc = parsed_url.netloc
+   
     # Get the current page number from the request, default to 1 if not provided
     page_number = request.GET.get('page', 1)
     part_number = request.GET.get('part_number', '')
@@ -128,6 +219,8 @@ def manufacturer_prod(request, manufacturer_id):
     page_size = data.get('size', 50)
     total_pages = data.get('pages', 1)
 
+    #print(items)
+    
     paginator = Paginator(items, page_size)
 
     try:
@@ -137,27 +230,46 @@ def manufacturer_prod(request, manufacturer_id):
     except EmptyPage:
         current_page = paginator.page(paginator.num_pages)
 
-    manufacturer_name = items[0]['Manufacturer']['Manufacturer'] if items else "Unknown Manufacturer"
+    manufacturer_name = items[0]['Manufacturer']['Manufacturer'] if items else ""
+    manufacturer=items[0]['Manufacturer']['Lookup'] if items else ""
     manufacturer_info = items[0]['Manufacturer']['Synopsis'] if items else ""
     # Split items into first_six_items and remaining_items
     first_six_items = items[:6]
     remaining_items = items[6:]
 
+    # Determine the new host
+    if manufacturer and not current_netloc.startswith(f"{manufacturer}."):
+        new_host = f"{manufacturer}.{current_netloc}"
+    else:
+        new_host = current_netloc
+
+    # Reconstruct the new URL with the modified host
+    new_url = urlunparse((
+        parsed_url.scheme,
+        new_host,
+        '/',  # Redirect to the root path of the new subdomain
+        parsed_url.params,
+        parsed_url.query,
+        parsed_url.fragment
+    ))
+    
     context = {
         'manufacturer_info':manufacturer_info,
         'manufacturer_id': manufacturer_id,
         'first_six_items': first_six_items,
         'remaining_items': remaining_items,
         'manufacturer_name': manufacturer_name,
+        'manufacturer': manufacturer,
         'total_pages': total_pages,
         'current_page': int(page_number),
         'part_number': part_number,
     }
+    # Redirect to the new URL
+    return HttpResponseRedirect(new_url)
+    #return render(request, 'industrialpartner/manufacture-product-2.html', context)
 
-    return render(request, 'industrialpartner/manufacture-product.html', context)
 
-
-
+@cache_page(60 * 30)  # Cache the view for 30 minutes
 def product(request, item_id, slug):
     api_endpoint = f"http://174.46.4.71/items/{item_id}"
     
@@ -169,26 +281,46 @@ def product(request, item_id, slug):
         # Convert the response to JSON format
         item_data = response.json()
 
+        product_url = request.build_absolute_uri()
+
+        Feature_List = [feature['Feature'] for feature in item_data['Features']]
+        Intro = item_data['Introductions'][0]['Introduction'] if item_data and item_data['Introductions'] else ""
+        manufacturer_info = item_data['Manufacturer']['Synopsis'] if item_data else "N/A"
+        manufacturer_id = item_data['Manufacturer']['ManufacturerID']
+        manufacturer = item_data['Manufacturer']['Manufacturer']
+        simpletype = item_data['SimpleTypes'][0]['SimpleType']
+
+        #For Related Product
+        data = fetch_paginated_data_items(manufacturer_id, page=1)
+        items = data.get('items', [])
+
+        first_three_items = items[:3]
+
         # Check if the provided slug matches the slug from the API
         if slug != item_data.get('Slug'):
             return HttpResponse("Invalid slug", status=404)
 
         # Pass the item data to the template
         context = {
-            'item_data': item_data
+            'item_data': item_data,
+            'Feature_List': Feature_List,
+            'Intro': Intro,
+            'manufacturer_info': manufacturer_info,
+            'manufacturer_id': manufacturer_id,
+            'manufacturer': manufacturer,
+            'first_three_items': first_three_items,
+            'simpletype':simpletype,
+            'product_url':product_url,
         }
 
         # Render the template with the item data
-        return render(request, 'industrialpartner/product-page.html', context)
+        return render(request, 'industrialpartner/product-page-2.html', context)
 
     except requests.RequestException as e:
         # Handle any errors that occur during the request
         error_message = f"Failed to fetch data from API: {str(e)}"
         return HttpResponse(error_message, status=response.status_code)
 
-
-def all_product(request):
-    return render(request, 'industrialpartner/main.html')
 
 def fetch_paginated_data_all_items(page):
     api_endpoint = f"http://174.46.4.71/items?page={page}"
@@ -225,11 +357,78 @@ def all_product(request):
         'current_page': int(page_number),
     }
 
-    return render(request, 'industrialpartner/main.html', context)
+    return render(request, 'industrialpartner/main-2.html', context)
 
-def quote_request(request):
+@csrf_exempt
+def success(request, quote_id):
+
+    quote_id = request.session.get('quote_id')
 
     if request.method == 'POST':
+        form = QuoteAddon(request.POST)
+        form_info = QuoteAddonInfo(request.POST)
+
+        if form.is_valid() and form_info.is_valid:
+            data = {
+                "QuoteID": form.cleaned_data['quote_id'],
+                "Address1": form.cleaned_data['address1'],
+                "Address2": form.cleaned_data['address2'],
+                "City": form.cleaned_data['city'],
+                "StateProv": form.cleaned_data['stateprov'],
+                "ZIPPostalCode": form.cleaned_data['zip'],
+                "CountryID": form.cleaned_data['country'],
+                "CustomerTypeID": form.cleaned_data['industry'],
+                "Comments": form.cleaned_data['comments'],
+                "QuotePurposeID": form.cleaned_data['purpose']
+            }
+
+            api_endpoint = f"http://174.46.4.71/quotes/addon/{quote_id}"
+            try:
+                response = requests.post(api_endpoint, json=data)
+                response.raise_for_status()
+                response_data = response.json()  # Parse the JSON response
+
+                messages.success(request, 'Thank You for your Submission!')
+                return redirect('success', quote_id=quote_id)
+            
+            except requests.RequestException as e:
+                error_message = f"Failed to send quote request: {str(e)}"
+                return HttpResponse(error_message, status=response.status_code)  
+    else:
+        form = QuoteAddon()
+
+
+    if request.method == 'POST':
+        form_info = QuoteAddonInfo(request.POST)
+        if form_info.is_valid():
+            data_info = {
+                "QuoteID": form_info.cleaned_data['quote_id'],
+                "QuotingTime": form_info.cleaned_data['response'],
+                "EquipmentConditionID": form_info.cleaned_data['condition']
+            }
+            api_endpoint_info = f"http://174.46.4.71/quotes/request-info/{quote_id}"
+            try:
+                response_info = requests.post(api_endpoint_info, json=data_info)
+                response_info.raise_for_status()
+            except requests.RequestException as e:
+                error_message = f"Failed to send quote request: {str(e)}"
+                return HttpResponse(error_message, status=response.status_code)        
+    else:
+        form_info = QuoteAddonInfo()
+
+
+    context = {
+        'quote_id': quote_id,
+        'form': form,
+        'form_info':form_info
+    }
+    return render(request, 'industrialpartner/success-page.html', context)
+
+
+@csrf_exempt
+def quote_request(request):
+    if request.method == 'POST':
+    
         form = QuoteRequestForm(request.POST)
         if form.is_valid():
             data = {
@@ -252,15 +451,36 @@ def quote_request(request):
             try:
                 response = requests.post(api_endpoint, json=data)
                 response.raise_for_status()
-                # Use Django messages to pass the success quote request
-                message = 'Your Quote Request has been Submitted.<br>We would get back with you shortly'
-                messages.add_message(request, messages.SUCCESS, mark_safe(message), extra_tags='quote_request')
+                response_data = response.json()  # Parse the JSON response
 
-                #messages.success(request, f'Your Quote Request has been Submitted.\nWe would get back with you shortly')
+                # Extract the QuoteID from the response data
+                quote_id = response_data.get('QuoteID')
+
+                # Store the quote_id in the session
+                request.session['quote_id'] = quote_id
+
+                ip = get_client_ip(request)
+
+                data_info = {
+                        "QuoteID": quote_id,
+                        "IPAddress": ip,
+                        "Source": 'www.industrialpartner.com',
+                        "IsFirstRFQ": 0
+                    }
+                api_endpoint_info = f"http://174.46.4.71/quotes/request-info/{quote_id}"
+                try:
+                    response_info = requests.post(api_endpoint_info, json=data_info)
+                    response_info.raise_for_status()
+                except requests.RequestException as e:
+                    return HttpResponse( status=response.status_code)
+            
+                # Use Django messages to pass the success quote request
+                #message = 'Your Quote Request has been Submitted.<br>We would get back with you shortly'
+                #messages.add_message(request, messages.SUCCESS, mark_safe(message), extra_tags='quote_request')
 
                 # Redirect back to the referring page
                 #referer = request.META.get('HTTP_REFERER', '/')
-                return redirect('success')
+                return redirect('success', quote_id=quote_id)
             
             except requests.RequestException as e:
                 error_message = f"Failed to send quote request: {str(e)}"
@@ -285,7 +505,7 @@ def search_items(request):
     else:
         items = []
 
-    return render(request, 'industrialpartner/main.html', {'items': items})
+    return render(request, 'industrialpartner/main-2.html', {'items': items})
 
 
 def fetch_product_details_from_api(item_id):
@@ -375,10 +595,7 @@ def about(request):
 def ser_rqst(request):
     return render(request, 'industrialpartner/service-request.html')
 
-
-def success(request):
-    return render(request, 'industrialpartner/success-page.html')
-
+@csrf_exempt
 def quote_request_cart(request):
     if request.method == 'POST':
         form = QuoteRequestFormCart(request.POST)
@@ -466,127 +683,36 @@ def filter_view(request):
         'selected_simpletype': simpletype  # Pass selected simpletype to template
     }
 
-    return render(request, 'industrialpartner/main.html', context)
+    return render(request, 'industrialpartner/main-2.html', context)
 
 
 
 #SITEMAP LOGIC
-def fetch_all_data_load(brand_name, page):
-    response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
+
+def fetch_item_data_page(manufacturer, page):
+    api_endpoint = f"http://174.46.4.71/items?manufacturer_lookup={manufacturer}&page={page}"
+    #if part_number of the particular manufacture is queried
+    response = requests.get(api_endpoint)
     if response.status_code == 200:
-        data = response.json()
-        return data
-    return {'items': [], 'pages': 0}
+        return response.json()
+    return {}
 
-def sitemap_data_load(request):
-    brand_name = request.GET.get('brand_name', '')
-    page = int(request.GET.get('page', 1))
-    
-    data = fetch_all_data_load(brand_name, page)
-    items = data.get('items', [])
-    for manufacturer in items:
-        manufacturer_attributes = {}
-        manufacturer_name = manufacturer.get('ManufacturerStandardized', '')
-        if manufacturer_name:
-            first_letter = manufacturer_name[0].upper()
-            attribute_name = f'Manufacturer_{first_letter}'
-            manufacturer_attributes[attribute_name] = manufacturer_name
-        manufacturer.update(manufacturer_attributes)
+#@cache_page(60 * 15)  # Cache the view for 15 minutes
+def sitemap_products(request, manufacturer):
+    # Check if the request is an AJAX request
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        page = int(request.GET.get('page', 1))  # Ensure page is an integer
+        data = fetch_item_data_page(manufacturer, page)
+        items = data.get('items', [])
+        return JsonResponse({'items': items})
 
-    return JsonResponse({'manufacturers': items, 'pages': data.get('pages', 0), 'current_page': page})
-
-def sitemap_loading(request):
-    brand_name = request.GET.get('brand_name', '')
-    
-    context = {
-        'brand_name': brand_name,
-    }
-    
-    return render(request, 'industrialpartner/sitemap_loading.html', context)
-
-
-def fetch_all_data_main(brand_name):
-    all_items = []
-    page = 1
-    
-    while True:
-        response = requests.get(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page}")
-        if response.status_code == 200:
-            data = response.json()
-            items = data.get('items', [])
-            if not items:
-                break
-            all_items.extend(items)
-            total_pages = data.get('pages', 1)
-            if page >= total_pages:
-                break
-            page += 1
-        else:
-            break
-    
-    return {
-        'items': all_items
-    }
-
-@cache_page(60 * 30)  # Cache the view for 15 minutes
-def sitemap(request):
-    brand_name = request.GET.get('brand_name', '')  # Default to 'A' if not specified
-        
-    data = fetch_all_data_main(brand_name)
-    
-    items = data.get('items', [])
-    # Modify the manufacturer objects to include attributes for each brand name
-    for manufacturer in items:
-        #print(manufacturer)  # Print the manufacturer object to debug
-        manufacturer_attributes = {}
-        manufacturer_name = manufacturer.get('ManufacturerStandardized', '')
-        if manufacturer_name:
-            first_letter = manufacturer_name[0].upper()
-            attribute_name = f'Manufacturer_{first_letter}'
-            manufacturer_attributes[attribute_name] = manufacturer_name
-        manufacturer.update(manufacturer_attributes)
-
-
-    context = {
-        'manufacturers': items,  # Pass all items to the template
-        'brand_name': brand_name,
-    }
-    return render(request, 'industrialpartner/sitemap.html', context)
-
-
-def fetch_all_item_data(manufacturer_id):
-    all_items = []
-    page = 1
-
-    while True:
-        response = requests.get(f"http://174.46.4.71/items?manufacturer_id={manufacturer_id}&page={page}")
-        if response.status_code == 200:
-            data = response.json()
-            items = data.get('items', [])
-            if not items:
-                break
-            all_items.extend(items)
-            total_pages = data.get('pages', 1)
-            if page >= total_pages:
-                break
-            page += 1
-        else:
-            break
-    
-    return {
-        'items': all_items
-    }
-
-@cache_page(60 * 15)  # Cache the view for 15 minutes
-def sitemap_products(request, manufacturer_id):
-    # Fetch data from the API
-    data = fetch_all_item_data(manufacturer_id)
-
+    # Initial page load (for non-AJAX requests)
+    data = fetch_item_data_page(manufacturer, 1)  # Fetch data for page 1
     items = data.get('items', [])
     manufacturer_name = items[0]['Manufacturer']['Manufacturer'] if items else ""
 
     context = {
-        'manufacturer_id': manufacturer_id,
+        'manufacturer': manufacturer,
         'items': items,
         'manufacturer_name': manufacturer_name,
     }

@@ -5,10 +5,16 @@
     <head>
         <meta charset="utf-8"/>
         <title>
-            Industrial Partner - Reliable Source for Your Procurement Needs
+            {{item_data.PartNumber}} ({{item_data.Manufacturer.Manufacturer}})
         </title>
-        <meta name="description" content="Worldwide Supplier of Industrial MRO and Electronics Product Spares for Inventory, Replacement or Upgrade." />
-        <meta name="keywords" content="Industrial MRO Spares Inventory, Industrial Electronics, Purchase Replacement Manufacturing Parts, PLCs, Servo Motors, Servo Drives, Industrial Automation, Aerospace, Military, Defense, Medical, Worldwide Component Sourcing" />
+        <meta name="keywords" content="{{item_data.PartNumber}}, {{item_data.Manufacturer.Manufacturer}}, {{simpletype}}, {{item_data.PartNumberClean}}" />
+        <meta name="description" content="{{item_data.PartNumber}} {{item_data.Manufacturer.Manufacturer}} {{simpletype}} Inventory In Stock and Lead Time Available. {{item_data.PartNumber}} Price with Quick Quote and Purchase Options. Call for Expedited Service." />
+        <meta property="og:title" content="{{simpletype}}">
+        <meta property="og:title" content="{{item_data.PartNumber}} {{simpletype}} by {{item_data.Manufacturer.Manufacturer}}">
+        <meta property="og:url" content="{{product_url}}">
+        <meta property="og:description" content="{{item_data.PartNumber}} {{item_data.Manufacturer.Manufacturer}} {{simpletype}} Inventory In Stock and Lead Time Available. {{item_data.PartNumber}} Price with Quick Quote and Purchase Options. Call for Expedited Service.">
+        <link rel="canonical" href="{{product_url}}" />
+
         <meta content="width=device-width, initial-scale=1" name="viewport"/>
         <meta content="Webflow" name="generator"/>
         <link href="{% static 'industrialpartner/css/normalize.css' %}" rel="stylesheet" type="text/css"/>

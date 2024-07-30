@@ -5,7 +5,7 @@
     {% block content %}
     
     <body>
-       <div style="margin: 100px; text-align: center;">
+       <div style="margin: 10px; text-align: center;">
         <div class="html-embed-2 w-embed">
             <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="lightgreen" viewBox="0 0 24 24">
                 <path d="M9 7V2.221a2 2 0 0 0-.5.365L4.586 6.5a2 2 0 0 0-.365.5H9Z"/>
@@ -13,41 +13,397 @@
               </svg> 
             </div>
 
-            <p style="font-size: 18px; font-weight: bold;">Your Quote Request has been Submitted.</p>
-            <p>We would get back with you shortly</p>
-                <!--Script for auto redirecting page-->
-                <script>
-                    // Countdown function
-                    function countdown(seconds) {
-                        document.getElementById('countdown').textContent = seconds;
-                        if (seconds > 0) {
-                            setTimeout(function() {
-                                countdown(seconds - 1);
-                            }, 1000);
-                        } else {
-                            // Redirect after countdown
-                            window.location.replace("{% url 'all_product' %}");
-                        }
-                    }
-                
-                    // Start countdown on page load
-                    document.addEventListener('DOMContentLoaded', function() {
-                        countdown(10); // Start countdown from 7 seconds
-                    });
-                </script>  
-                
-                <div style="margin-top: 50px;">
-                    <a href="{% url 'all_product'%}" style="text-decoration: none;">
-                        <div>Click here 
+            <p style="font-size: 18px; font-weight: bold;">Your quote request #{{quote_id}} was successfully submitted..</p>
+            <p>To better serve you and to expedite your request, please take a moment to complete the short form below.</p>
+            <p>We would get back with you shortly</p> 
+
+                <div class="w-layout-blockcontainer w-container">
+                    <div class="uui-padding-vertical-xhuge-46" style="padding-top: 1em!important;">
+                        <div class="w-layout-grid uui-contact04_component-5">
+                            <div class="uui-contact04_form-wrapper-4 w-form">
+
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        <div class="alert alert-success">{{ message }}</div>
+                                        <a class="button-2 w-button" href="{% url 'all_product'%}" style="display: inline-flex; margin-top: 30px;">
+                                            View Product Catalog <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
+                                              </svg>                              
+                                        </a>
+                                    {% endfor %}
+                                {% else %}
+                                <form class="uui-contact04_form-4" data-name="Contact 04 form" data-wf-element-id="6859cec3-f888-f3d3-338f-5c2a51825ed8" data-wf-page-id="6699465347976d5a3a5716e3" id="wf-form-Contact-04-form" method="post" name="wf-form-Contact-04-form" action="{% url 'success' quote_id=quote_id %}">
+                                    {% csrf_token %}
+                                    <div class="form-field-2col-6" id="w-node-_6859cec3-f888-f3d3-338f-5c2a51825ed9-3a5716e3">
+
+                                        <!--Equipment Condition-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_9fb88651-5e26-b225-ebef-9f8f387f1822-3a5716e3">
+                                            <select class="uui-form_input-17 select w-select" data-name="Contact 04 Select 2" id="condition" name="condition" required="">
+                                                <option selected="selected" value="0">
+                                                    Equipment Condition
+                                                </option>
+                                                <option value="1">New</option>
+                                                <option value="2">Refurbished</option>
+                                                <option value="3">No Preference</option>
+                                            </select>
+                                        </div>
+
+                                        <!--Response Time-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_9fb88651-5e26-b225-ebef-9f8f387f1822-3a5716e3">
+                                            <select class="uui-form_input-17 select w-select" data-name="Contact 04 Select 2" id="response" name="response" required="">
+                                                <option selected="selected" value="0">
+                                                    Response Time
+                                                </option>
+                                                <option value="Sometime Today">Sometime Today</option>
+                                                <option value="Tomorrow">Tomorrow</option>
+		                                        <option value="Immediately">Immediately</option>
+                                                <option value="Within a Week">Within a Week</option>
+                                            </select>
+                                        </div>
+
+                                        <input class="uui-form_input-17 w-input" data-name="Contact 04 Phone 3" id="quote_id" maxlength="256" name="quote_id" placeholder="" required="" value="{{quote_id}}" type="hidden"/>
+                                        <!--Company Industry-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_9fb88651-5e26-b225-ebef-9f8f387f1822-3a5716e3">
+                                            <select class="uui-form_input-17 select w-select" data-name="Contact 04 Select 2" id="industry" name="industry" required="">
+                                                <option selected="selected" value="0">
+                                                    Company Industry
+                                                </option>
+                                                <option value="15">Asset Recovery / Recycling</option>
+                                                <option value="11">Broker - Electronic Equipment</option>
+                                                <option value="9">CLEC</option>
+                                                <option value="14">Contractor / Installer</option>
+                                                <option value="1">Corporate End User</option>
+                                                <option value="4">Distributor</option>
+                                                <option value="6">Education</option>
+                                                <option value="5">Government</option>
+                                                <option value="10">ILEC</option>
+                                                <option value="2">Individual / Personal</option>
+                                                <option value="12">ISP / Service Provider</option>
+                                            </select>
+                                        </div>
+                                        <!--Purpose-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_43faedee-95db-e4ba-73ed-bb1237902486-3a5716e3">
+                                            <select class="uui-form_input-17 select w-select" data-name="Contact 04 Select 2" id="purpose" name="purpose" required="">
+                                                <option selected="selected" value="0">
+                                                    Purpose
+                                                </option>
+                                                <option value="3">Additions/Upgrades</option>
+                                                <option value="1">New Install</option>
+                                                <option value="5">OEM/ODM</option>
+                                                <option value="4">Prototyping</option>
+                                                <option value="2">Replacement</option>
+                                                <option value="6">Resale</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-field-2col-6">
+                                        <!--Address1-->
+                                        <div class="uui-form-field-wrapper-7">
+                                            <input class="uui-form_input-17 w-input" data-name="Contact 04 Email" id="address1" maxlength="256" name="address1" placeholder="Address" required="" type="text" style="color: black;"/>
+                                        </div>
+                                        <!--Address2-->
+                                        <div class="uui-form-field-wrapper-7">
+                                            <input class="uui-form_input-17 w-input" data-name="Contact 04 Phone" id="address2" maxlength="256" name="address2" placeholder="Address 2" required="" type="text" style="color: black;"/>
+                                        </div>
+                                        <!--City-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_004471e4-474e-fd3f-987d-db99fe7a4053-3a5716e3">
+                                            <input class="uui-form_input-17 w-input" data-name="Contact 04 Phone 4" id="city" maxlength="256" name="city" placeholder="City" required="" type="text" style="color: black;"/>
+                                        </div>
+                                        <!--StateProv-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-b5c05f82-023a-2dc9-9c3d-cca99f3ca285-3a5716e3">
+                                            <input class="uui-form_input-17 w-input" data-name="Contact 04 Phone 3" id="stateprov" maxlength="256" name="stateprov" placeholder="State / Prov." required="" type="text" style="color: black;"/>
+                                        </div>
+                                        <!--Zip-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-a886357c-a4be-3ef2-6a46-5bcb727e2849-3a5716e3">
+                                            <input class="uui-form_input-17 w-input" data-name="Contact 04 Phone 2" id="zip" maxlength="256" name="zip" placeholder="Zipcode" required="" type="number" style="color: black;"/>
+                                        </div>
+                                        <!--Country-->
+                                        <div class="uui-form-field-wrapper-7" id="w-node-_2081ac85-f3d7-30ef-d95d-5902433dfac1-3a5716e3">
+                                            <select class="uui-form_input-17 select w-select" data-name="Contact 04 Select 2" id="country" name="country" required="">
+                                                <option selected="selected" value="0">
+                                                    Country
+                                                </option>
+                                                <option value="220">United States</option>
+                                                <option value="1">Afghanistan</option>
+                                                <option value="2">Albania</option>
+                                                <option value="3">Algeria</option>
+                                                <option value="4">American Samoa</option>
+                                                <option value="5">Andorra</option>
+                                                <option value="6">Angola</option>
+                                                <option value="7">Anguilla</option>
+                                                <option value="8">Antarctica</option>
+                                                <option value="9">Antigua and Barbuda</option>
+                                                <option value="10">Argentina</option>
+                                                <option value="11">Armenia</option>
+                                                <option value="12">Aruba</option>
+                                                <option value="13">Australia</option>
+                                                <option value="14">Austria</option>
+                                                <option value="15">Azerbaijan</option>
+                                                <option value="16">Bahamas</option>
+                                                <option value="17">Bahrain</option>
+                                                <option value="18">Bangladesh</option>
+                                                <option value="19">Barbados</option>
+                                                <option value="20">Belarus</option>
+                                                <option value="21">Belgium</option>
+                                                <option value="22">Belize</option>
+                                                <option value="23">Benin</option>
+                                                <option value="24">Bermuda</option>
+                                                <option value="25">Bhutan</option>
+                                                <option value="26">Bolivia</option>
+                                                <option value="27">Bosnia and Herzegovina</option>
+                                                <option value="28">Botswana</option>
+                                                <option value="29">Bouvet Island</option>
+                                                <option value="30">Brazil</option>
+                                                <option value="31">British Indian Ocean territory</option>
+                                                <option value="32">Brunei Darussalam</option>
+                                                <option value="33">Bulgaria</option>
+                                                <option value="34">Burkina Faso</option>
+                                                <option value="35">Burundi</option>
+                                                <option value="36">Cambodia</option>
+                                                <option value="37">Cameroon</option>
+                                                <option value="38">Canada</option>
+                                                <option value="39">Cape Verde</option>
+                                                <option value="40">Cayman Islands</option>
+                                                <option value="41">Central African Republic</option>
+                                                <option value="42">Chad</option>
+                                                <option value="43">Chile</option>
+                                                <option value="44">China</option>
+                                                <option value="45">Christmas Island</option>
+                                                <option value="46">Cocos (Keeling) Islands</option>
+                                                <option value="47">Colombia</option>
+                                                <option value="48">Comoros</option>
+                                                <option value="49">Congo</option>
+                                                <option value="50">Cook Islands</option>
+                                                <option value="51">Costa Rica</option>
+                                                <option value="52">Cote d'Ivoire</option>
+                                                <option value="53">Croatia</option>
+                                                <option value="54">Cuba</option>
+                                                <option value="55">Cyprus</option>
+                                                <option value="56">Czech Republic</option>
+                                                <option value="57">Denmark</option>
+                                                <option value="58">Djibouti</option>
+                                                <option value="59">Dominica</option>
+                                                <option value="60">Dominican Republic</option>
+                                                <option value="61">East Timor</option>
+                                                <option value="62">Ecuador</option>
+                                                <option value="63">Egypt</option>
+                                                <option value="64">El Salvador</option>
+                                                <option value="65">Equatorial Guinea</option>
+                                                <option value="66">Eritrea</option>
+                                                <option value="67">Estonia</option>
+                                                <option value="68">Ethiopia</option>
+                                                <option value="69">Falkland Islands</option>
+                                                <option value="70">Faroe Islands</option>
+                                                <option value="71">Fiji</option>
+                                                <option value="72">Finland</option>
+                                                <option value="73">France</option>
+                                                <option value="74">French Guiana</option>
+                                                <option value="75">French Polynesia</option>
+                                                <option value="76">French Southern Territories</option>
+                                                <option value="77">Gabon</option>
+                                                <option value="78">Gambia</option>
+                                                <option value="79">Georgia</option>
+                                                <option value="80">Germany</option>
+                                                <option value="81">Ghana</option>
+                                                <option value="82">Greece</option>
+                                                <option value="83">Greenland</option>
+                                                <option value="84">Grenada</option>
+                                                <option value="85">Guadeloupe</option>
+                                                <option value="86">Guam</option>
+                                                <option value="87">Guatemala</option>
+                                                <option value="89">Guinea</option>
+                                                <option value="88">Guinea-Bissau</option>
+                                                <option value="90">Guyana</option>
+                                                <option value="91">Haiti</option>
+                                                <option value="92">Heard and McDonald Islands</option>
+                                                <option value="93">Honduras</option>
+                                                <option value="94">Hong Kong</option>
+                                                <option value="95">Hungary</option>
+                                                <option value="96">Iceland</option>
+                                                <option value="97">India</option>
+                                                <option value="98">Indonesia</option>
+                                                <option value="99">Iran</option>
+                                                <option value="100">Iraq</option>
+                                                <option value="101">Ireland</option>
+                                                <option value="102">Israel</option>
+                                                <option value="103">Italy</option>
+                                                <option value="104">Jamaica</option>
+                                                <option value="105">Japan</option>
+                                                <option value="106">Jordan</option>
+                                                <option value="107">Kazakhstan</option>
+                                                <option value="108">Kenya</option>
+                                                <option value="109">Kiribati</option>
+                                                <option value="110">Korea (north)</option>
+                                                <option value="111">Korea (south)</option>
+                                                <option value="112">Kuwait</option>
+                                                <option value="113">Kyrgyzstan</option>
+                                                <option value="114">Laos</option>
+                                                <option value="115">Latvia</option>
+                                                <option value="116">Lebanon</option>
+                                                <option value="117">Lesotho</option>
+                                                <option value="118">Liberia</option>
+                                                <option value="119">Liechtenstein</option>
+                                                <option value="120">Lithuania</option>
+                                                <option value="121">Luxembourg</option>
+                                                <option value="122">Macao</option>
+                                                <option value="123">Macedonia</option>
+                                                <option value="124">Madagascar</option>
+                                                <option value="126">Malawi</option>
+                                                <option value="125">Malaysia</option>
+                                                <option value="127">Maldives</option>
+                                                <option value="128">Mali</option>
+                                                <option value="129">Malta</option>
+                                                <option value="130">Marshal Islands</option>
+                                                <option value="131">Martinique</option>
+                                                <option value="132">Mauritania</option>
+                                                <option value="133">Mauritius</option>
+                                                <option value="134">Mayotte</option>
+                                                <option value="135">Mexico</option>
+                                                <option value="136">Micronesia</option>
+                                                <option value="137">Moldova</option>
+                                                <option value="138">Monaco</option>
+                                                <option value="139">Mongolia</option>
+                                                <option value="140">Montserrat</option>
+                                                <option value="141">Morocco</option>
+                                                <option value="142">Mozambique</option>
+                                                <option value="143">Myanmar</option>
+                                                <option value="144">Namibia</option>
+                                                <option value="145">Nauru</option>
+                                                <option value="146">Nepal</option>
+                                                <option value="147">Netherland Antilles</option>
+                                                <option value="148">Netherlands</option>
+                                                <option value="149">New Caledonia</option>
+                                                <option value="150">New Zealand</option>
+                                                <option value="151">Nicaragua</option>
+                                                <option value="152">Niger</option>
+                                                <option value="153">Nigeria</option>
+                                                <option value="154">Niue</option>
+                                                <option value="155">Norfolk Island</option>
+                                                <option value="156">Northern Marianas Islands</option>
+                                                <option value="157">Norway</option>
+                                                <option value="158">Oman</option>
+                                                <option value="159">Pakistan</option>
+                                                <option value="160">Palau</option>
+                                                <option value="161">Panama</option>
+                                                <option value="162">Papua New Guinea</option>
+                                                <option value="163">Paraguay</option>
+                                                <option value="164">Peru</option>
+                                                <option value="165">Philippines</option>
+                                                <option value="166">Pitcairn</option>
+                                                <option value="167">Poland</option>
+                                                <option value="168">Portugal</option>
+                                                <option value="169">Puerto Rico</option>
+                                                <option value="170">Qatar</option>
+                                                <option value="171">Reunion</option>
+                                                <option value="172">Romania</option>
+                                                <option value="173">Russian Federation</option>
+                                                <option value="174">Rwanda</option>
+                                                <option value="175">Saint Helena</option>
+                                                <option value="176">Saint Kitts and Nevis</option>
+                                                <option value="177">Saint Lucia</option>
+                                                <option value="178">Saint Pierre and Miquelon</option>
+                                                <option value="179">Saint Vincent and the Grenadines</option>
+                                                <option value="180">Samoa</option>
+                                                <option value="181">San Marino</option>
+                                                <option value="182">Sao Tome and Principe</option>
+                                                <option value="183">Saudi Arabia</option>
+                                                <option value="184">Senegal</option>
+                                                <option value="236">Serbia and Montenegro</option>
+                                                <option value="185">Seychelles</option>
+                                                <option value="186">Sierra Leone</option>
+                                                <option value="187">Singapore</option>
+                                                <option value="188">Slovakia</option>
+                                                <option value="189">Slovenia</option>
+                                                <option value="190">Solomon Islands</option>
+                                                <option value="191">Somalia</option>
+                                                <option value="192">South Africa</option>
+                                                <option value="193">South Georgia</option>
+                                                <option value="194">Spain</option>
+                                                <option value="195">Sri Lanka</option>
+                                                <option value="196">Sudan</option>
+                                                <option value="197">Suriname</option>
+                                                <option value="198">Svalbard and Jan Mayen Islands</option>
+                                                <option value="199">Swaziland</option>
+                                                <option value="200">Sweden</option>
+                                                <option value="201">Switzerland</option>
+                                                <option value="202">Syria</option>
+                                                <option value="203">Taiwan</option>
+                                                <option value="204">Tajikistan</option>
+                                                <option value="205">Tanzania</option>
+                                                <option value="206">Thailand</option>
+                                                <option value="207">Togo</option>
+                                                <option value="208">Tokelau</option>
+                                                <option value="209">Tonga</option>
+                                                <option value="210">Trinidad and Tobago</option>
+                                                <option value="211">Tunisia</option>
+                                                <option value="212">Turkey</option>
+                                                <option value="213">Turkmenistan</option>
+                                                <option value="214">Turks and Caicos Islands</option>
+                                                <option value="215">Tuvalu</option>
+                                                <option value="216">Uganda</option>
+                                                <option value="217">Ukraine</option>
+                                                <option value="218">United Arab Emirates</option>
+                                                <option value="219">United Kingdom</option>
+                                                <option value="221">Uruguay</option>
+                                                <option value="222">Uzbekistan</option>
+                                                <option value="223">Vanuatu</option>
+                                                <option value="224">Vatican City</option>
+                                                <option value="225">Venezuela</option>
+                                                <option value="226">Vietnam</option>
+                                                <option value="227">Virgin Islands (British)</option>
+                                                <option value="228">Virgin Islands (US)</option>
+                                                <option value="229">Wallis and Futuna Islands</option>
+                                                <option value="230">Western Sahara</option>
+                                                <option value="231">Yemen</option>
+                                                <option value="232">Yugoslavia</option>
+                                                <option value="233">Zaire</option>
+                                                <option value="234">Zambia</option>
+                                                <option value="235">Zimbabwe</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <!--Comments-->
+                                    <div class="uui-form-field-wrapper-7">
+                                        <textarea class="uui-form_input-17 text-area w-input" data-name="Contact 04 Message" id="comments" maxlength="5000" name="comments" placeholder="Comments" required="" style="color: black;"></textarea>
+                                    </div>
+                                    <div class="uui-form-button-wrapper-7" id="w-node-_6859cec3-f888-f3d3-338f-5c2a51825f16-3a5716e3">
+                                        <style>
+                                            /* Loader styles */
+            
+                                            #submitting {
+                                                display: none;
+                                                
+                                            }
+                                            #submit{
+                                                display: flex;
+                                            }
+                                            
+                                        </style>
+                                        
+                                        <script>
+                                            function showRequestAddonLoader() {
+                                                // Hide the submit txt
+                                                document.getElementById('submit').style.display = 'none';
+                                                // Show the submitting and loader
+                                                document.getElementById('submitting').style.display = 'flex';
+                                            }
+                                                        
+                                        </script>
+                                        <!--<input class="uui-button-50 w-button" data-wait="Please wait..." id="w-node-_6859cec3-f888-f3d3-338f-5c2a51825f17-3a5716e3" type="submit" value="Submit"/>-->
+                                        <button type="submit" class="f-button-primary w-button" style="border-radius: 5px!important; display: inline-flexbox" onclick="showRequestAddonLoader()">
+                                            <div id="submit" >Submit</div>
+                                            <div id="submitting" >submitting...  
+                                                <div id="loader_btn_quote" style="max-width: 25px; display: flex; ">
+                                                    <img src="https://media.tenor.com/GdWFHSpv44EAAAAj/loading-circles.gif">
+                                                </div>
+                                            </div>
+                                        </button>
+                                    </div>
+                                </form>
+                                {% endif %}
+                            </div>
                         </div>
-                        <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 9-7 7-7-7"/>
-                        </svg>
-                        </div>
-                    </a>
-                    <h6>to view the all our Product Catalog</h6>
-                    <p>Redirecting in <span id="countdown"></span> seconds... </p> 
-                    <img id="loader_cart" style="max-width: 25px; vertical-align: middle; margin-left: 0;" src="https://media.tenor.com/GdWFHSpv44EAAAAj/loading-circles.gif" alt="Loading...">
+                    </div>
                 </div>
 
         </div>

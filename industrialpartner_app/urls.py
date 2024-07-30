@@ -22,11 +22,14 @@ from django.conf.urls.static import static
 from django.conf.urls import handler404
 from industrialpartner.views import custom_404
 
+#from django_subdomains.utils import urlconf_url
+
 handler404 = custom_404
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('industrialpartner.urls')),
+    #urlconf_url(r'^(?P<manufacturer>\w+)/', include('your_app.urls')),
 ]
 # Serve media files during development
 if settings.DEBUG:

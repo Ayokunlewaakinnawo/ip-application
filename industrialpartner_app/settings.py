@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-2lej9c8ip)p81#&i!+ca4#9@lor2b+g2)tkpob96e9@0w5vp4i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['18.216.236.182']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -139,3 +139,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, '/industrialpartner/static'),
 ]
 
+CSRF_COOKIE_SECURE = True  # Ensure cookies are only sent over HTTPS
+CSRF_COOKIE_HTTPONLY = True  # Ensure cookies are not accessible via JavaScript

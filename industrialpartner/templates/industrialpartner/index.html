@@ -27,13 +27,16 @@
             .uui-testimonial18_slide-nav-3{
                 display: none;
             }
+            span.current{
+                display: none!important;
+            }
         }
     </style>
     
     <body>        
         <div class="div-block-170">
             <div>
-                <a class="link-block-7 w-inline-block" data-w-id="84f11a31-5804-5e86-2f95-33e1ade34464" href="#" style="display:none">
+                <a class="link-block-7 w-inline-block" data-w-id="84f11a31-5804-5e86-2f95-33e1ade34464" href="#" style="display:none;">
                     <div class="text-block-69">
                         <p style=" background-color: #eef5fc; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">View all Brands</p>
                         <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -42,7 +45,7 @@
                     </div>
                 </a>
             </div>
-            <a class="link-block-7-copy w-inline-block" data-w-id="fbd2305d-7047-0af8-8b34-64366ec00100" href="#" style="display:inline-block">
+            <a class="link-block-7-copy w-inline-block" data-w-id="fbd2305d-7047-0af8-8b34-64366ec00100" href="#" style="display:inline-block;">
                 <div class="text-block-69" style="color: red; display: block;">
                     <div><svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 15 7-7 7 7"/>
@@ -50,7 +53,8 @@
                     <p style=" background-color: #fdeeee; border-radius: 12px; padding: 2.5px 10px; font-size: 12px;">Close Tab</p>
                 </div>
             </a>
-            <div class="all_brand_container" data-w-id="fa659da7-7c7b-717b-7583-e279b4d37481" style="display:block">
+            
+            <div class="all_brand_container" data-w-id="fa659da7-7c7b-717b-7583-e279b4d37481" style="display:block;">
 
                 <!--container of all letters to select from-->
                 <div class="flexboc_container">
@@ -67,41 +71,11 @@
                         color: blue; /* Set text color to blue for the active letter */
                     }
                 </style>
-                <!--Script for active letter selected-->
-                <script>
-                    function scrollToLetter(letter) {
-                        localStorage.setItem('selectedLetter', letter);
-                    }
-
-                    document.addEventListener('DOMContentLoaded', function() {
-                        var selectedLetter = localStorage.getItem('selectedLetter');
-                        if (selectedLetter) {
-                            var selectedElement = document.querySelector('.link-block-5.active');
-                            if (selectedElement) {
-                                selectedElement.classList.remove('active');
-                            }
-                            var newSelectedElement = document.querySelector('.link-block-5[href="?brand_name=' + selectedLetter + '#'+selectedLetter+'"]');
-                            if (newSelectedElement) {
-                                newSelectedElement.classList.add('active');
-                            }
-                        }
-                    });
-                </script>
-
-                <style>
-                    .div-block-150{
-                        text-decoration: none;
-                        color: black;
-                        transition: color 0.3s, font-weight 0.3s;
-                    }
-                    .div-block-150:hover{
-                        font-weight: bold; /* Make text bold on hover */
-                    }
-                </style>
+                
                 <!--container of select brand-->
                 <div class="brand_container" >
                     {% for manufacturer in manufacturers %}
-                        <div class="div-block-150" style=" font-size: 12px; border-radius: 12px; padding-left: 10px; padding-right: 10px; border: 1px solid #a7a7a7; background-color: #fcfcfc!important">
+                        <div class="div-block-150" style=" font-size: 11px; border-radius: 12px; padding-left: 10px; padding-right: 10px; border: 1px solid #a7a7a7; background-color: #fcfcfc!important">
                             <a href="{% url 'manufacturer_prod' manufacturer_id=manufacturer.ManufacturerID %}" style="text-decoration: none; color:black;">
                                 <div id="{{ manufacturer.Manufacturer}}">
                                     {{ manufacturer.Manufacturer}}
@@ -194,22 +168,34 @@
                         document.getElementById('search-icon').style.display = 'none';
                         // Show the loader
                         document.getElementById('loader').style.display = 'flex';
-                    }
-                    function stopSearch() {
-                        // Hide the loader when the search is stopped
-                        document.getElementById('loader').style.display = 'none';
-                        // Add any additional actions you need when the search is stopped
+                         // Show the loader-text
+                        document.getElementById('loader-text').style.display = 'block';
                     }
                                 
                 </script>
                 <!--Search box-->
                 <div class="w-form">
+                    <div id="loader-text" style="display: none; text-align: center; margin-top: 5px;">
+                        <p class="blinking-text" style="color: #0076d1; font-size: 11px;">Thank you for your patience as we search over 16Million Products...</p>
+                    </div>
+                    <style>
+                        @keyframes blink {
+                            0% { opacity: 1; }
+                            50% { opacity: 0.2; }
+                            100% { opacity: 1; }
+                        }
+                    
+                        .blinking-text {
+                            animation: blink 2s infinite;
+                        }
+                    </style>
                     <form data-name="Email Form" data-wf-element-id="18c3fead-84f2-438d-be49-73f6830592e0" data-wf-page-id="66699e613a9f0781083938e0" id="email-form" method="get" action="{% url 'search_items' %}" value="{{ part_number }}" name="email-form"> 
                         <div class="f-field-wrapper">
                             <div class="f-field-icon-wrapper">
-                                <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R" id="Input-Field-Icon-R" maxlength="256" name="part_number" placeholder="Enter PartNumber here!" type="text"/>
-                                <div id="loader" style="max-width: 50px;">
-                                    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmJtaXRsbzBuNnY3bXpiZW9vd2ppN2dzd3lybGF2bmV5NXQ4NXd3OCZlcD12MV9naWZzX3NlYXJjaCZjdD1z/NnSFnC428LRHaxUNzj/giphy.gif" alt="Loading...">
+                                <input class="f-field-input-icon-r w-input" data-name="Input Field Icon R" id="Input-Field-Icon-R" maxlength="256" name="part_number" placeholder="Search Part Number / Model" type="text"/>
+                                <div id="loader" style="max-width: 45px; padding-right: 20px;">
+                                    <!--<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmJtaXRsbzBuNnY3bXpiZW9vd2ppN2dzd3lybGF2bmV5NXQ4NXd3OCZlcD12MV9naWZzX3NlYXJjaCZjdD1z/NnSFnC428LRHaxUNzj/giphy.gif" alt="Loading...">-->
+                                    <img src="https://media.tenor.com/GdWFHSpv44EAAAAj/loading-circles.gif">
                                 </div>
                                 <button type="submit" class="link-block-2 w-inline-block" onclick="showLoader()">
                                     <div class="f-field-icon-r w-embed" id="search-icon">
@@ -221,7 +207,7 @@
                                 </button>
                             </div>
                         </div>
-                    </form>       
+                    </form>
                 </div>
             </div>
             
@@ -231,14 +217,14 @@
                     <source data-wf-ignore="true" src="{% static 'industrialpartner/videos/ip11-transcode.webm'} %" type="video/webm"/>
                 </video>
                 <div class="div-block-172">
-                    <div class="spark-centered-900" style="margin-top: 60px!important">
+                    <div class="spark-centered-900" style="text-align: center; margin-top: 60px!important">
                         <h2 class="main_head_text" style="color: white; -webkit-text-stroke: 0;">
                             Ensuring Continued Performance of your Current and Legacy Equipment.
                         </h2>
                         <p class="spark-secondary-paragraph" style="color: white;">
                             Keep your equipment running smoothly with our expert solutions. We ensure both current and legacy systems perform at their best, reducing downtime and boosting productivity. Trust us to maintain your equipment's efficiency and reliability.
                         </p>
-                        <a class="button-2 w-button" href="{% url 'all_product'%}" style="display: inline-flex;">
+                        <a class="button-2 w-button" href="{% url 'all_product'%}" style="display: inline-flex; border-radius: 2.5px;">
                             View Product Catalog <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 12H5m14 0-4 4m4-4-4-4"/>
                               </svg>                              
