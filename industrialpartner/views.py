@@ -85,21 +85,7 @@ def home(request):
             # Check if there is a subdomain and strip it off
             # Rebuild the netloc with the stripped of subdomain that does not exit or empty data.get(items)
             #new_netloc = f"{parts[1]}" 
-            #print(parts)
-            if len(parts) > 2:
-                new_netloc = '.'.join(parts[1:])
-            else:
-                new_netloc = parts[1]
-
-            new_url = urlunparse((
-                parsed_url.scheme,
-                new_netloc,
-                '/',  # Redirect to the root path of the new domain
-                parsed_url.params,
-                parsed_url.query,
-                parsed_url.fragment
-            ))
-
+            new_url = f"http://anythingindustrial.com/"
             return HttpResponseRedirect(new_url)
             #return HttpResponseRedirect(new_url)
             #return render_index_page(request, data, brand_name, page_number)
