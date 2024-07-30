@@ -87,7 +87,7 @@ def home(request):
             #new_netloc = f"{parts[1]}" 
             #print(parts)
             if len(parts) > 1:
-                part_url = '.'.join(parts[1:])
+                part_url = '.'.join(parts[1:2])
             # Rebuild the URL
             new_url = urlunparse((
                 parsed_url.scheme,
