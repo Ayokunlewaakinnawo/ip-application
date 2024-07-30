@@ -82,13 +82,8 @@ def home(request):
 
         if not data.get('items'):
             data = fetch_data(f"http://174.46.4.71/manufacturer?brand_name={brand_name}&page={page_number}")
-            # Check if there is a subdomain and strip it off
-            # Rebuild the netloc with the stripped of subdomain that does not exit or empty data.get(items)
-            #new_netloc = f"{parts[1]}" 
-            new_url = f"http://anythingindustrial.com/"
-            return HttpResponseRedirect(new_url)
-            #return HttpResponseRedirect(new_url)
-            #return render_index_page(request, data, brand_name, page_number)
+            
+            return render_index_page(request, data, brand_name, page_number)
         else:
             return render_manufacturer_page(request, data, manufacturer, page_number, part_number)
     else:
