@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from urllib.parse import urlparse, urlunparse, urlunsplit
 from django.views.decorators.csrf import csrf_exempt
+import re
 
 def get_subdomain(request):
     """
@@ -57,13 +58,18 @@ def get_paginated_data(api_endpoint, page, additional_params=None):
         api_endpoint += additional_params
     return fetch_data(f"{api_endpoint}&page={page}")
 
+def is_ip_address(netloc):
+    # Regular expression to check if the netloc is an IP address
+    ip_pattern = re.compile(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$')
+    return ip_pattern.match(netloc) is not None
+
 @cache_page(60 * 15)  # Cache the view for 15 minutes
 def home(request):
     full_url = request.build_absolute_uri()
     parsed_url = urlparse(full_url)
     netloc = parsed_url.netloc
     parts = netloc.split('.')
-    subdomain = parts[0] if parts and len(parts) > 1 else None
+    subdomain = parts[0] if parts and len(parts) > 1 and not is_ip_address(netloc) else None
 
     page_number = request.GET.get('page', 1)
     part_number = request.GET.get('part_number', '')
